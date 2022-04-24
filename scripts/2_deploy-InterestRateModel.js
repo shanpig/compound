@@ -1,11 +1,11 @@
-const { ethers } = require('hardhat');
+const { ethers } = require("hardhat");
 const {
   readDeploymentData,
   writeDeploymentData,
-} = require('./deploymentDataManipulation');
+} = require("./deploymentDataManipulation");
 
 const deploy = async (interestRateModalContractName) => {
-  console.log('Deploying interest rate model...');
+  console.log("Deploying interest rate model...");
   const InterestRateModel = await ethers.getContractFactory(
     interestRateModalContractName
   );
@@ -13,10 +13,11 @@ const deploy = async (interestRateModalContractName) => {
   const deploymentData = await readDeploymentData();
 
   const interestRateModel = await InterestRateModel.deploy(1, 1);
-  console.log('Interest rate model deployed');
+  await interestRateModel.deployed();
+  console.log("Interest rate model deployed at ", interestRateModel.address);
 
   deploymentData.interestRateModelAddress = interestRateModel.address;
   writeDeploymentData(deploymentData);
 };
 
-deploy('WhitePaperInterestRateModel');
+deploy("WhitePaperInterestRateModel");

@@ -5,31 +5,33 @@ const {
   writeDeploymentData,
 } = require("./deploymentDataManipulation");
 
-const deploy = async (tokenName) => {
+const deploy = async () => {
   console.log("Deploying...");
   const ERCDelegate = await ethers.getContractFactory("CErc20Delegate");
   const ERCDelegator = await ethers.getContractFactory("CErc20Delegator");
 
   const deploymentData = await readDeploymentData();
   const {
-    cTokenAddresses: { CPig },
+    cTokenAddresses: { ERC20Pig },
     comptrollerAddress,
     interestRateModelAddress,
   } = deploymentData;
 
   const delegate = await ERCDelegate.deploy();
+  await delegate.deployed();
   const delegator = await ERCDelegator.deploy(
-    CPig,
+    ERC20Pig,
     comptrollerAddress,
     interestRateModelAddress,
     ethers.utils.parseUnits("1", 18),
-    "CPig",
-    "cPig",
+    "a test ERC20 token",
+    "ERC20Pig",
     8,
     accounts[0].address,
     delegate.address,
     0x00
   );
+  await delegator.deployed();
 
   deploymentData.delegateAddress = delegator.address;
   deploymentData.delegatorAddress = delegator.address;
@@ -38,4 +40,4 @@ const deploy = async (tokenName) => {
   console.log("deployed delegate & delegator");
 };
 
-deploy("CPig").catch((error) => console.log(error));
+deploy().catch((error) => console.log(error));

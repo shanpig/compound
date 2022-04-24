@@ -12,6 +12,8 @@ const deploy = async () => {
 
   const pig = await ERC20Pig.deploy();
 
+  await pig.deployed();
+
   deploymentData.cTokenAddresses = {
     ...deploymentData.cTokenAddresses,
     ERC20Pig: pig.address,

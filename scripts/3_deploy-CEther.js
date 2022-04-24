@@ -1,11 +1,11 @@
-const { ethers } = require('hardhat');
+const { ethers } = require("hardhat");
 const {
   readDeploymentData,
   writeDeploymentData,
-} = require('./deploymentDataManipulation');
+} = require("./deploymentDataManipulation");
 
 const deploy = async (cTokenContractName) => {
-  console.log('Deploying...');
+  console.log("Deploying...");
   const CToken = await ethers.getContractFactory(cTokenContractName);
 
   const deploymentData = await readDeploymentData();
@@ -16,20 +16,21 @@ const deploy = async (cTokenContractName) => {
     comptrollerAddress,
     interestRateModelAddress,
     1,
-    'CEther',
-    'cETH',
+    "CEther",
+    "cETH",
     18,
-    '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
+    "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"
   );
+  await cToken.deployed();
 
   deploymentData.cTokenAddresses = {
     ...deploymentData.cTokenAddresses,
     [cTokenContractName]: cToken.address,
   };
 
-  console.log('ctoken deployed at: ', cToken.address);
+  console.log("ctoken deployed at: ", cToken.address);
 
   writeDeploymentData(deploymentData);
 };
 
-deploy('CEther').catch((error) => console.log(error));
+deploy("CEther").catch((error) => console.log(error));

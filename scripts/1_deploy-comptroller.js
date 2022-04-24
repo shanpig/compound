@@ -1,20 +1,20 @@
-const { ethers } = require('hardhat');
-const {
-  readDeploymentData,
-  writeDeploymentData,
-} = require('./deploymentDataManipulation');
+const { ethers } = require("hardhat");
 
-const deploy = async () => {
-  console.log('Deploying...');
-  const Comptroller = await ethers.getContractFactory('ComptrollerG1');
+const deployComptroller = async () => {
+  console.log("Deploying...");
+  const Comptroller = await ethers.getContractFactory("ComptrollerG1");
   const comptroller = await Comptroller.deploy();
+  await comptroller.deployed();
 
-  console.log('deployed');
+  console.log("deployed at ", comptroller.address);
 
-  const deploymentData = await readDeploymentData();
-  deploymentData.comptrollerAddress = comptroller.address;
+  // const deploymentData = await readDeploymentData();
+  // deploymentData.comptrollerAddress = comptroller.address;
 
-  writeDeploymentData(deploymentData);
+  // writeDeploymentData(deploymentData);
+  return comptroller.address;
 };
 
-deploy();
+module.exports = {
+  deployComptroller,
+};

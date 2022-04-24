@@ -51,7 +51,10 @@ extendEnvironment((hre) => {
     return await SimplePriceOracle.attach(address);
   };
 
-  const mintCEther = async (targetAddress, cEther) => {
+  const mintCEther = async (targetAddress, cEther, oracle) => {
+    console.log("get cEther price from oracle...");
+    oracle.refreshCEtherPrice(cEther.address);
+
     let value = await cEther.balanceOf(targetAddress);
     console.log("current account balance is: ", value);
 
@@ -108,7 +111,7 @@ extendEnvironment((hre) => {
     console.log("setting price oracle...");
     await comptroller._setPriceOracle(oracle.address);
 
-    await mintCEther(accounts[0].address, cEther);
+    await mintCEther(accounts[0].address, cEther, oracle);
 
     await approveERC20Pig(pig, delegator, 100);
 
@@ -154,10 +157,16 @@ module.exports = {
       },
     ],
   },
-  defaultNetwork: "localhost",
+  defaultNetwork: "hardhat",
   networks: {
     localhost: {
       url: "http://localhost:8545",
+    },
+    hardhat: {
+      forking: {
+        blockNumber: 11095000,
+        url: "https://eth-mainnet.alchemyapi.io/v2/hInL2PjiXEEJcsB-nyWpqTPA0Bz3rfaK",
+      },
     },
   },
 };

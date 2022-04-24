@@ -1,12 +1,1 @@
-{
-  "comptrollerAddress": "0xa722bdA6968F50778B973Ae2701e90200C564B49",
-  "interestRateModelAddress": "0xc7cDb7A2E5dDa1B7A0E792Fe1ef08ED20A6F56D4",
-  "cTokenAddresses": {
-    "CEther": "0x967AB65ef14c58bD4DcfFeaAA1ADb40a022140E5",
-    "ERC20Pig": "0x1D13fF25b10C9a6741DFdce229073bed652197c7"
-  },
-  "oracleAddress": "0xe1708FA6bb2844D5384613ef0846F9Bc1e8eC55E",
-  "unitrollerAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "delegateAddress": "0x871ACbEabBaf8Bed65c22ba7132beCFaBf8c27B5",
-  "delegatorAddress": "0x871ACbEabBaf8Bed65c22ba7132beCFaBf8c27B5"
-}
+{"comptrollerAddress":"0x5FbDB2315678afecb367f032d93F642f64180aa3","interestRateModelAddress":"0x5FbDB2315678afecb367f032d93F642f64180aa3","cTokenAddresses":{"CEther":"0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9","ERC20Pig":"0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"},"oracleAddress":"0x68B1D87F95878fE05B998F19b66F4baba5De1aed","unitrollerAddress":"0x5FbDB2315678afecb367f032d93F642f64180aa3","delegateAddress":"0xa513E6E4b8f2a923D98304ec87F64353C4D5C853","delegatorAddress":"0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"}
