@@ -1,10 +1,9 @@
 const { expect } = require('chai');
-const { ethers, network } = require('hardhat');
+const { ethers } = require('hardhat');
 const { accounts, poolProviderAddress, wethAddress } = require('../constant');
 
 const AliceAccount = accounts[0].address;
 const BobAccount = accounts[1].address;
-const CharlieAccount = accounts[2].address;
 
 const ETHPrice = ethers.utils.parseEther('1000');
 const ETHPriceNew = ethers.utils.parseEther('800');
@@ -27,10 +26,6 @@ const flashLoanMintWETHAmount = ethers.utils.parseEther('50');
 
 const scaleDown = (bigNumber) => {
   return bigNumber.div(ethers.utils.parseEther('1'));
-};
-
-const scaleUp = (bigNumber) => {
-  return bigNumber.mul(ethers.utils.parseEther('1'));
 };
 
 const deployComptroller = async () => {
@@ -371,23 +366,75 @@ describe('用 flash loan 去借錢還給 compound', async () => {
       const flashLoanWETHBalance = await weth.balanceOf(flashLoan.address);
       expect(flashLoanWETHBalance.eq(flashLoanMintWETHAmount)).to.be.true;
     });
+  });
 
-    it('呼叫 flashLoan 的 flashLoan function，開始執行清算', async () => {
-      const flashLoanCEtherBalance = await cEther.balanceOf(flashLoan.address);
+  describe('呼叫 flashLoan 的 flashLoan function，開始執行清算', async () => {
+    let flashLoanWETHBalance;
+    let flashLoanCEtherBalance;
+    let flashLoanWETHBalanceNew;
+    let flashLoanCEtherBalanceNew;
+    let flashLoanActualCEtherReward;
+    let spentWETH;
+
+    before('執行閃電貸與清算流程', async () => {
+      flashLoanCEtherBalance = await cEther.balanceOf(flashLoan.address);
+      flashLoanWETHBalance = await weth.balanceOf(flashLoan.address);
 
       await flashLoan.flashLoan(AliceBorrowCWETHAmount.div(2), weth.address);
 
-      const flashLoanCEtherBalanceNew = await cEther.balanceOf(
-        flashLoan.address
-      );
-      console.log(
-        'flashLoan 得到的 cEther 獎勵: ',
-        flashLoanCEtherBalance,
-        '->',
-        flashLoanCEtherBalanceNew
+      flashLoanCEtherBalanceNew = await cEther.balanceOf(flashLoan.address);
+    });
+
+    it('flash loan contract 有拿到 cEther 的獎勵', async () => {
+      expect(flashLoanCEtherBalanceNew.gt(flashLoanCEtherBalance)).to.be.true;
+    });
+
+    it('實拿的 cEther 換算成 WETH 會和 Alice 借出數量的一半等值', async () => {
+      flashLoanActualCEtherReward = flashLoanCEtherBalanceNew.sub(
+        flashLoanCEtherBalance
       );
 
-      expect(flashLoanCEtherBalanceNew.gt(flashLoanCEtherBalance)).to.be.true;
+      const flashLoanCEtherReward = flashLoanActualCEtherReward
+        .mul(1000)
+        .div(972);
+
+      const flashLoanEtherReward = flashLoanCEtherReward
+        .mul(ETHPriceNew)
+        .div(ETHPrice);
+
+      console.table({
+        'flashLoan 實拿的 CEther': flashLoanActualCEtherReward.toString(),
+        'flashLoan 沒扣 compound 2.8% 的話': flashLoanCEtherReward.toString(),
+        '所以真正拿到的 cEther 價值換算成 WETH 的話':
+          flashLoanEtherReward.toString(),
+        'Alice 借出 WETH 的數量': AliceBorrowCWETHAmount.toString(),
+      });
+
+      expect(
+        flashLoanEtherReward.eq(
+          AliceBorrowCWETHAmount.div(2).mul(liquidationIncentive).div(scale)
+        )
+      ).to.be.true;
+    });
+
+    it('計算 flash loan 實際花費', async () => {
+      flashLoanWETHBalanceNew = await weth.balanceOf(flashLoan.address);
+      spentWETH = flashLoanWETHBalance.sub(flashLoanWETHBalanceNew);
+
+      expect(spentWETH.eq(AliceBorrowCWETHAmount.div(2).mul(10009).div(10000)))
+        .to.be.true;
+    });
+
+    after('計算 flash loan 實際淨利', async () => {
+      const netIncome = flashLoanActualCEtherReward.mul(scaleDown(ETHPriceNew));
+      const netSpend = spentWETH.mul(scaleDown(ETHPrice));
+      const flashLoanTotalReward = netIncome.sub(netSpend);
+
+      console.table({
+        '收入(U)': scaleDown(netIncome).toString(),
+        '支出(U)': scaleDown(netSpend).toString(),
+        '淨利(U)': scaleDown(flashLoanTotalReward).toString(),
+      });
     });
   });
 });
