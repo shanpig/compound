@@ -123,9 +123,11 @@ const accounts = [
 const poolProviderAddress_mainnet =
   '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5';
 const weth_mainnet = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+const BAPAddress_mainnet = '0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D';
 
 module.exports = {
   accounts,
   poolProviderAddress: poolProviderAddress_mainnet,
   wethAddress: weth_mainnet,
+  BAPAddress_mainnet,
 };

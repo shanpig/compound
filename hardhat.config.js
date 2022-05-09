@@ -182,6 +182,7 @@ module.exports = {
     },
     hardhat: {
       forking: {
+        blockNumber: 14505525,
         url: 'https://eth-mainnet.alchemyapi.io/v2/hInL2PjiXEEJcsB-nyWpqTPA0Bz3rfaK',
       },
     },
