@@ -12,6 +12,7 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "linebreak-style": "off",
-    "semi": 2
+    "semi": 2,
+    "camelcase": "off"
   }
 }

@@ -33,18 +33,13 @@ contract FlashLoan is FlashLoanReceiverBase {
         address initiator,
         bytes calldata params
     ) external override returns (bool) {
-        console.log("我借的 token 數量", amounts[0]);
-        console.log("利息為: ", premiums[0]);
-        // console.log(
-        //     "Alice 抵押品的數量(cEther)",
-        //     cEther.balanceOf(address(borrower))
-        // );
+        console.log("我借的 token 數量: %s 顆 WETH", amounts[0] / 1 ether);
+        console.log(
+            "利息為: %s 顆 WETH/10000",
+            (premiums[0] * 10000) / 1 ether
+        );
 
         weth.approve(address(cToken), repayAmount);
-        // console.log(
-        //     "清算前 flashLoan 的 cEther 數量",
-        //     cEther.balanceOf(address(this))
-        // );
 
         uint256 err = cToken.liquidateBorrow(
             borrower,
@@ -52,16 +47,8 @@ contract FlashLoan is FlashLoanReceiverBase {
             cTokenCollateral
         );
         require(err == 0, "liquidateBorrow failed");
-        // console.log("error: ", err);
 
         uint256 cTokenAmount = cEther.balanceOf(address(this));
-
-        // console.log("現在 flashLoan 有的 cEther 數量", cTokenAmount);
-
-        // cEther.redeem(cTokenAmount);
-        // weth.deposit{value: cTokenAmount}();
-
-        // console.log(address(this).balance);
 
         weth.approve(address(LENDING_POOL), amounts[0] + premiums[0]);
         return true;
